@@ -163,8 +163,6 @@ function checkWin(id) {
   }
 }
 
-
-
 function hasDiagonalWin(id) {
   for (let i = 0; i < state.markers.length - 3; i++) {
     for (let j = 0; j < state.markers[0].length - 3; j++) {
