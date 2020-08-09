@@ -1,0 +1,11 @@
+<table class='table'>
+  <tr class='row-{{row}}' *ngFor='let row of rows()'>
+    <td *ngFor='let column of columns()' (click)='registerClick(row, column)'>
+      <span *ngIf="state.markers[row][column] != '0'; else alt" id='cell-{{row}}-{{column}}' class='marker'
+        [style.backgroundColor]="markerColor(row,column)">{{state.values[row][column]}}</span>
+      <ng-template #alt>
+        <span>{{state.values[row][column]}}</span>
+      </ng-template>
+    </td>
+  </tr>
+</table>

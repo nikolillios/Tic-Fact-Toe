@@ -1,0 +1,39 @@
+.prompt {
+  display: inline-block;
+  width: 100%;
+  min-height: 30px;
+  text-align: center;
+  border: solid 2px black;
+  background-color: #8ED8FB;
+  border-radius: 5px;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.body {
+  margin-top: 20px;
+}
+
+form {
+  margin: 10px 0px 0px 0px;
+}
+
+.players {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  border: 1px solid blue;
+}
+
+ul {
+  list-style-type: none;
+}
+
+button {
+  font-size: 20px;
+  border-radius: 10%;
+  background-color: bisque;
+}
+
+.players p {
+  font-weight: bold;
+}

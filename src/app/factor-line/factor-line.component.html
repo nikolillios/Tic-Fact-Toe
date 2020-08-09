@@ -1,0 +1,13 @@
+<div class='container'>
+  <ul>
+    <li *ngFor='let value of nums' (click)='select(value)'>
+      <span *ngIf='marked(value); else alt' class='marker'>{{value}}</span>
+      <ng-template #alt>
+        <span>
+          {{value}}
+        </span>
+      </ng-template>
+    </li>
+  </ul>
+</div>
+<button (click)='submitFactors()'>Enter</button>

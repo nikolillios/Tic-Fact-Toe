@@ -1,0 +1,27 @@
+<header></header>
+<form [formGroup]='joinForm' (ngSubmit)='join(joinForm.value)' *ngIf='!joined'>
+  <label for='name'>Name</label>
+  <input type='text' formControlName='name'>
+  <button type='submit'>join</button>
+</form>
+<div *ngIf='joined' class='body'>
+  <gameboard [(state)]='state' (selected)='registerBoardSelection($event)'></gameboard>
+  <factor-line [(state)]='state' (submitted)='registerFactorSub($event)' (selected)='registerFactorSelection($event)'>
+  </factor-line>
+  <p class='prompt' *ngIf='isCurrPlayer(socket.id); else alt'>
+    {{state.message}}
+  </p>
+  <ng-template #alt>
+    <p class='prompt'>{{currPlayer().name == undefined ? 'Press Start Game' : currPlayer().name + ' is playing'}}</p>
+  </ng-template>
+  <button *ngIf='!state.gameStarted; else started' (click)='startGame()'>Start Game</button>
+  <ng-template #started>
+    <button disabled='true'>Game Started</button>
+  </ng-template>
+  <div class="players">
+    <p>Players</p>
+    <ul>
+      <li *ngFor='let player of state.players' [ngStyle]="{'color': player.color}">{{player.name}}</li>
+    </ul>
+  </div>
+</div>
