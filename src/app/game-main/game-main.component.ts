@@ -41,10 +41,9 @@ export class GameMainComponent implements OnInit {
       console.log('msg: ' + data);
     });
     this.socket.on('joined', state => {
-      console.log(state);
       console.log('You have joined game');
-      this.joined = true;
       this.state = state;
+      this.joined = true;
     });
     this.socket.on('winner', id => {
       console.log('WINNER: ' + id);
@@ -89,7 +88,7 @@ export class GameMainComponent implements OnInit {
         return this.state.players[i];
       }
     }
-    throw Error('no such player with id: ' + id);
+    return null;
   }
 
   isCurrPlayer(id) {

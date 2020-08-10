@@ -67,7 +67,8 @@ function setListeners(socket) {
         isChoosingInitialFactors: false
       });
       printPlayers();
-      game.emit('joined', state);
+      socket.emit('joined', state);
+      game.emit('update', state);
       state.message = 'You have connected';
     } else {
       game.emit('msg', 'error: you can not join');
@@ -81,7 +82,7 @@ function setListeners(socket) {
       state.players[0].isCurrPlayer = true;
       state.players[0].isChoosingInitialFactors = true;
     }
-    state.message = 'Game was started. Choose initial factors on the factor line'
+    state.message = 'Game was started. Choose initial factors on the factor line.'
     game.emit('update', state);
   });
   // board selection
