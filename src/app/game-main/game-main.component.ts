@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import io from "socket.io-client"
 import { State } from "../model/State.model"
 import { FormBuilder } from '@angular/forms';
-import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'game-main',
