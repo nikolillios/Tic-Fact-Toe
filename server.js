@@ -5,7 +5,7 @@ const path = require('path');
 const http = require('http');
 const { stat } = require('fs');
 const { setMaxListeners } = require('process');
-const { getDefaultCompilerOptions } = require('typescript');
+const { getDefaultCompilerOptions, isShorthandPropertyAssignment } = require('typescript');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
@@ -42,8 +42,7 @@ var state = {
     ['0', '0', '0', '0', '0', '0'],
     ['0', '0', '0', '0', '0', '0']
   ],
-  gameStarted: false,
-  message: 'welcome, play the game',
+  gameStarted: false
 }
 
 const initState = state;
@@ -64,36 +63,39 @@ function setListeners(socket) {
         name: data.name,
         color: getColor(),
         isCurrPlayer: false,
+        score: 0,
         isChoosingInitialFactors: false
       });
-      printPlayers();
       socket.emit('joined', state);
       game.emit('update', state);
-      state.message = 'You have connected';
     } else {
       game.emit('msg', 'error: you can not join');
     }
   });
   // game started
   socket.on('game-started', () => {
-    console.log('game-started received')
-    state.gameStarted = true;
-    if (state.players.length > 0) {
-      state.players[0].isCurrPlayer = true;
-      state.players[0].isChoosingInitialFactors = true;
-    }
-    state.message = 'Game was started. Choose initial factors on the factor line.'
-    game.emit('update', state);
+    startGame();
   });
+  socket.on('play-again', () => {
+    resetPlayers();
+    startGame();
+    game.emit('update', state);
+  })
   // board selection
   socket.on('board-selection', coordinate => {
+    if (!isCurrPlayer(socket.id)) { return; }
     let row = coordinate[0];
     let col = coordinate[1];
-    if (state.factors[0] * state.factors[1] == state.values[coordinate[0]][coordinate[1]]
-      && isCurrPlayer(socket.id)) {
-      state.markers[coordinate[0]][coordinate[1]] = socket.id;
-      if (checkWin(socket.id)) {
-        state.message = `${getPlayerWithId(socket.id).name} has won the game!`
+    let player = getPlayerWithId(socket.id);
+    if (state.factors[0] * state.factors[1] == state.values[row][col]) {
+      if (state.markers[row][col] == '0') {
+        state.markers[row][col] = socket.id;
+      }
+      if (isGameOver(socket.id)) {
+        if (winner()) {
+          winner().score++;
+        }
+        state.gameStarted = false;
       }
       changeCurrPlayer();
     }
@@ -102,31 +104,27 @@ function setListeners(socket) {
   // factor selection
   socket.on('factor-selection', factors => {
     if (!isCurrPlayer(socket.id)) { return; }
+    //initial factors
     if (getPlayerWithId(socket.id).isChoosingInitialFactors) {
       state.factors = factors;
       getPlayerWithId(socket.id).isChoosingInitialFactors = false;
-      state.message = `New factors are ${state.factors[0]} and ${state.factors[1]}`
     }
+
     if (shareOneElement(factors, state.factors) && !getPlayerWithId(socket.id).isChoosingInitialFactors) {
       state.factors = factors;
-      state.message = `New factors are ${state.factors[0]} and ${state.factors[1]}`
     } else {
-      state.message = `You can only change one of the previous factors 
-      ${state.factors[0]} or ${state.factors[1]}`
     }
     game.emit('update', state);
   });
   // handle socket disconnect 
   socket.on('disconnect', () => {
     console.log('disconnecting');
-    console.log(state);
     let player = getPlayerWithId(socket.id);
     let index = state.players.indexOf(player);
     state.players.splice(index, 1);
     removeMarkersOfId(socket.id);
     if (state.players.length == 0) {
       resetState();
-      state.message = 'All players disconnected'
     }
     game.emit('update', state);
   });
@@ -152,16 +150,53 @@ function resetState() {
       ['0', '0', '0', '0', '0', '0'],
       ['0', '0', '0', '0', '0', '0']
     ],
-    gameStarted: false,
-    message: 'welcome, play the game'
+    gameStarted: false
   };
 }
 
-function checkWin(id) {
+function resetPlayers() {
+  for (let player of state.players) {
+    player.isChoosingInitialFactors = false;
+    player.isCurrPlayer = false;
+  }
+}
+
+function startGame() {
+  state.gameStarted = true;
+  if (state.players.length > 0) {
+    state.players[0].isCurrPlayer = true;
+    state.players[0].isChoosingInitialFactors = true;
+  }
+  game.emit('update', state);
+}
+
+function winner() {
+  for (let player of state.players) {
+    let id = player.id;
+    if (isGameOver(id) && !isBoardFull()) {
+      return player;
+    }
+  }
+  return undefined;
+}
+
+function isGameOver(id) {
+  console.log(hasWin(id, 'horizontal'), hasWin(id, 'vertical'),
+    hasWin(id, 'diagonal'), isBoardFull())
   if (hasWin(id, 'horizontal') || hasWin(id, 'vertical') ||
-    hasWin(id, 'diagonal')) {
+    hasWin(id, 'diagonal') || isBoardFull()) {
     return true;
   }
+  return false;
+}
+
+function isBoardFull() {
+  for (let i = 0; i < state.markers.length; i++) {
+    for (let j = 0; j < state.markers[0].length; j++) {
+      if (state.markers[i][j] == '0') { return false }
+    }
+  }
+  return true;
 }
 
 function hasDiagonalWin(id) {
@@ -243,24 +278,6 @@ function getPlayerWithId(id) {
     }
   }
   return null;
-}
-
-function printPlayers() {
-  //print connection ids
-  console.log('people: ');
-  for (let i = 0; i < state.players.length; i++) {
-    console.log(state.players[i].id);
-  }
-  console.log(state.markers);
-}
-
-function currPlayer() {
-  for (let i = 0; i < state.players.length; i++) {
-    if (state.players[i].isCurrPlayer) {
-      return state.players[i];
-    }
-  }
-  return 'no current player';
 }
 
 function hasWin(id, orientation) {

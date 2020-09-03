@@ -6,7 +6,6 @@ export class State {
   factors: [number, number];
   markers: Array<Array<string>>;
   gameStarted: boolean;
-  message: string;
 
   constructor() {
     this.values = [];
@@ -14,6 +13,5 @@ export class State {
     this.factors = [null, null];
     this.markers = [];
     this.gameStarted = false;
-    this.message = '';
   }
 }

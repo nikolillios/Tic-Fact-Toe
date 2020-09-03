@@ -1,11 +1,20 @@
 <div class='container'>
-  <ul>
+  <h3>Factor Line</h3>
+  <ul class="numbers">
     <li *ngFor='let value of nums' (click)='select(value)'>
       <span *ngIf='marked(value); else alt' class='marker'>{{value}}</span>
       <ng-template #alt>
         <span>
           {{value}}
         </span>
+      </ng-template>
+    </li>
+  </ul>
+  <ul class="double-markers">
+    <li *ngFor='let value of nums'>
+      <span *ngIf='isDoubled(value); else alt' class='marker'>x2</span>
+      <ng-template #alt>
+        <span>{{' '}}</span>
       </ng-template>
     </li>
   </ul>

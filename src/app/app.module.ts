@@ -6,6 +6,7 @@ import { GameboardComponent } from './gameboard/gameboard.component';
 import { GameMainComponent } from './game-main/game-main.component';
 import { HeaderComponent } from './header/header.component';
 import { FactorLineComponent } from './factor-line/factor-line.component';
+import { ScoreCardComponent } from './score-card/score-card.component'
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -15,7 +16,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     GameboardComponent,
     GameMainComponent,
     FactorLineComponent,
-    HeaderComponent
+    HeaderComponent,
+    ScoreCardComponent
   ],
   imports: [
     BrowserModule,

@@ -44,4 +44,11 @@ export class FactorLineComponent implements OnInit {
     return false;
   }
 
+  isDoubled(value: number) {
+    if (this.state.factors[0] == value && this.state.factors[1] == value) {
+      return true;
+    }
+    return false;
+  }
+
 }
