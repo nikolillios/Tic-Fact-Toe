@@ -1,3 +1,4 @@
+<h3>Gameboard</h3>
 <table class='table'>
   <tr class='row-{{row}}' *ngFor='let row of rows()'>
     <td *ngFor='let column of columns()' (click)='registerClick(row, column)'>

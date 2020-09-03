@@ -54,12 +54,13 @@ export class GameMainComponent implements OnInit {
     if (this.winner()) {
       let winner = this.winner();
       this.message = `${winner.name} has won the game. Press 'Play Again' to start a new game.`
+      return;
     }
     if (!this.state.gameStarted) { this.message = "Game Over. Press 'play again' to start new game."; return; }
     if (this.isCurrPlayer(this.socket.id)) {
       let currPlayer = this.getPlayerWithId(this.socket.id);
       if (currPlayer.isChoosingInitialFactors) {
-        this.message = "Select the first 2 factors on the factor line";
+        this.message = "Select any 2 factors on the factor line then select their product on the gameboard";
       } else {
         this.message = "You are the current player. Change one of the factors and mark the product on the board.";
       }

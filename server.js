@@ -34,14 +34,7 @@ var state = {
   ],
   players: [],
   factors: [],
-  markers: [
-    ['0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0']
-  ],
+  markers: initMarkers(),
   gameStarted: false
 }
 
@@ -78,6 +71,7 @@ function setListeners(socket) {
   });
   socket.on('play-again', () => {
     resetPlayers();
+    clearMarkersAndFactors();
     startGame();
     game.emit('update', state);
   })
@@ -94,10 +88,12 @@ function setListeners(socket) {
       if (isGameOver(socket.id)) {
         if (winner()) {
           winner().score++;
+          resetPlayers();
         }
         state.gameStarted = false;
+      } else {
+        changeCurrPlayer();
       }
-      changeCurrPlayer();
     }
     game.emit('update', state);
   });
@@ -142,16 +138,20 @@ function resetState() {
     ],
     players: [],
     factors: [],
-    markers: [
-      ['0', '0', '0', '0', '0', '0'],
-      ['0', '0', '0', '0', '0', '0'],
-      ['0', '0', '0', '0', '0', '0'],
-      ['0', '0', '0', '0', '0', '0'],
-      ['0', '0', '0', '0', '0', '0'],
-      ['0', '0', '0', '0', '0', '0']
-    ],
+    markers: initMarkers(),
     gameStarted: false
   };
+}
+
+function initMarkers() {
+  return [
+    ['0', '0', '0', '0', '0', '0'],
+    ['0', '0', '0', '0', '0', '0'],
+    ['0', '0', '0', '0', '0', '0'],
+    ['0', '0', '0', '0', '0', '0'],
+    ['0', '0', '0', '0', '0', '0'],
+    ['0', '0', '0', '0', '0', '0']
+  ]
 }
 
 function resetPlayers() {
@@ -159,6 +159,11 @@ function resetPlayers() {
     player.isChoosingInitialFactors = false;
     player.isCurrPlayer = false;
   }
+}
+
+function clearMarkersAndFactors() {
+  state.markers = initMarkers();
+  state.factors = [];
 }
 
 function startGame() {
